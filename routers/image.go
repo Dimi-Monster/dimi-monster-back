@@ -38,6 +38,12 @@ func initImageRouter(router fiber.Router) {
 		},
 	)
 
+	imageRouter.Get("/weekly",
+		func(c *fiber.Ctx) error {
+			return imagectrl.GetWeeklyBestCtrl(c)
+		},
+	)
+
 	imageDownloadRouter := router.Group("/download")
 	imageDownloadRouter.Get("/:id",
 		func(c *fiber.Ctx) error {
