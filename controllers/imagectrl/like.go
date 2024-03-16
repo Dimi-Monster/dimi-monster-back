@@ -3,7 +3,6 @@ package imagectrl
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"pentag.kr/dimimonster/middleware"
 	"pentag.kr/dimimonster/models"
@@ -16,7 +15,7 @@ func AddLikeCtrl(c *fiber.Ctx) error {
 	}
 	userID := middleware.GetUserIDFromMiddleware(c)
 	image := models.Image{}
-	err := mgm.Coll(&models.Image{}).First(bson.M{"_id": imageID}, &image)
+	err := mgm.Coll(&models.Image{}).FindByID(imageID, &image)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return c.Status(404).SendString("Not Found")
@@ -42,7 +41,7 @@ func DeleteLikeCtrl(c *fiber.Ctx) error {
 	}
 	userID := middleware.GetUserIDFromMiddleware(c)
 	image := models.Image{}
-	err := mgm.Coll(&models.Image{}).First(bson.M{"_id": imageID}, &image)
+	err := mgm.Coll(&models.Image{}).FindByID(imageID, &image)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return c.Status(404).SendString("Not Found")
