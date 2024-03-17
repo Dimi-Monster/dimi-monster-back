@@ -27,6 +27,11 @@ func initImageRouter(router fiber.Router) {
 		},
 	)
 
+	imageRouter.Get("/like/:id",
+		func(c *fiber.Ctx) error {
+			return imagectrl.GetLikeCountCtrl(c)
+		},
+	)
 	imageRouter.Post("/like/:id",
 		func(c *fiber.Ctx) error {
 			return imagectrl.AddLikeCtrl(c)
@@ -44,8 +49,7 @@ func initImageRouter(router fiber.Router) {
 		},
 	)
 
-	imageDownloadRouter := router.Group("/download")
-	imageDownloadRouter.Get("/:id",
+	imageRouter.Get("/:id",
 		func(c *fiber.Ctx) error {
 			return imagectrl.DownloadImageCtrl(c)
 		},

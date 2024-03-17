@@ -38,13 +38,8 @@ func RefreshCtrl(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString("Internal Server Error")
 	}
-	imageToken, err := crypt.CreateJWT(crypt.JWTClaims{UserID: foundUser.ID.Hex(), Type: "image"})
-	if err != nil {
-		return c.Status(500).SendString("Internal Server Error")
-	}
 	return c.JSON(fiber.Map{
 		"access-token": accessToken,
-		"image-token":  imageToken,
 		"at-expire":    config.AccessTokenExpire,
 	})
 }
