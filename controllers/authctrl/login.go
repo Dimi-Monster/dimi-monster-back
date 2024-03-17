@@ -65,12 +65,6 @@ func LoginCtrl(c *fiber.Ctx) error {
 		log.Println(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
-	imageToken, err := crypt.CreateJWT(crypt.JWTClaims{UserID: foundUser.ID.Hex(), Type: "image"})
-	if err != nil {
-		log.Println("Error while creating JWT")
-		log.Println(err)
-		return c.Status(500).SendString("Internal Server Error")
-	}
 
 	return c.JSON(fiber.Map{
 		"name":          foundUser.Name,
@@ -78,7 +72,6 @@ func LoginCtrl(c *fiber.Ctx) error {
 		"picture":       profile.Picture,
 		"locale":        profile.Locale,
 		"access-token":  accessToken,
-		"image-token":   imageToken,
 		"at-expire":     config.AccessTokenExpire,
 		"refresh-token": foundUser.RefreshTokens[len(foundUser.RefreshTokens)-1],
 	})

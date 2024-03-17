@@ -8,6 +8,24 @@ import (
 	"pentag.kr/dimimonster/models"
 )
 
+func GetLikeCountCtrl(c *fiber.Ctx) error {
+	imageID := c.Params("id")
+	if !isHex(imageID) {
+		return c.Status(400).SendString("Bad Request")
+	}
+	image := models.Image{}
+	err := mgm.Coll(&models.Image{}).FindByID(imageID, &image)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return c.Status(404).SendString("Not Found")
+		}
+		return c.Status(500).SendString("Internal Server Error")
+	}
+	return c.JSON(fiber.Map{
+		"like": len(image.LikedBy),
+	})
+}
+
 func AddLikeCtrl(c *fiber.Ctx) error {
 	imageID := c.Params("id")
 	if !isHex(imageID) {
