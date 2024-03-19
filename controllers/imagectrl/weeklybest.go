@@ -17,7 +17,7 @@ import (
 
 func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 	userID := middleware.GetUserIDFromMiddleware(c)
-	type result struct {
+	type weeklyAggregate struct {
 		HexID       string    `bson:"_id"`
 		CreatedAt   time.Time `bson:"created_at"`
 		Size        int       `bson:"size"`
@@ -47,7 +47,7 @@ func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 			},
 		},
 		bson.M{
-			"$limit": 1,
+			"$limit": 3,
 		},
 	}
 
@@ -57,34 +57,29 @@ func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Internal Server Error")
 	}
 
-	var image result
-	if !cursor.Next(context.Background()) {
-		return c.Status(404).SendString("Not Found")
-	}
-	err = cursor.Decode(&image)
-	if err != nil {
-		log.Panicln(err)
+	var images []weeklyAggregate
+	if err = cursor.All(context.Background(), &images); err != nil {
+		log.Println(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
-
-	var base64String string
-	thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.HexID + ".jpg")
-	if err != nil {
-		log.Panicln(err)
-		base64String = ""
-	} else {
-		base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)
-	}
-	likedByMe := false
-	for _, user := range image.LikedBy {
-		if user == userID {
-			likedByMe = true
-			break
+	var result []ImageResponse
+	for _, image := range images {
+		var base64String string
+		thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.HexID + ".jpg")
+		if err != nil {
+			log.Println(err)
+			base64String = ""
+		} else {
+			base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)
 		}
-	}
-
-	return c.JSON(
-		ImageResponse{
+		likedByMe := false
+		for _, user := range image.LikedBy {
+			if user == userID {
+				likedByMe = true
+				break
+			}
+		}
+		result = append(result, ImageResponse{
 			ID:          image.HexID,
 			CreatedAt:   image.CreatedAt.Format(time.RFC3339),
 			Description: image.Description,
@@ -92,6 +87,8 @@ func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 			Like:        image.Size,
 			LikedByMe:   likedByMe,
 			Thumbnail:   base64String,
-		},
-	)
+		})
+	}
+
+	return c.JSON(result)
 }
