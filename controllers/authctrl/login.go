@@ -49,6 +49,9 @@ func LoginCtrl(c *fiber.Ctx) error {
 			return c.Status(500).SendString("Internal Server Error")
 		}
 	}
+	if foundUser.Banned {
+		return c.Status(403).SendString("Banned User")
+	}
 	if len(foundUser.RefreshTokens) > 6 {
 		foundUser.RefreshTokens = foundUser.RefreshTokens[len(foundUser.RefreshTokens)-5:]
 	}

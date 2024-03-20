@@ -34,6 +34,9 @@ func RefreshCtrl(c *fiber.Ctx) error {
 	if !foundUser.HasRefreshToken(body.RefreshToken) {
 		return c.Status(401).SendString("Unauthorized")
 	}
+	if foundUser.Banned {
+		return c.Status(403).SendString("Banned User")
+	}
 	accessToken, err := crypt.CreateJWT(crypt.JWTClaims{UserID: foundUser.ID.Hex(), Type: "auth"})
 	if err != nil {
 		return c.Status(500).SendString("Internal Server Error")

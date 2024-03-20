@@ -9,6 +9,7 @@ type User struct {
 	Name             string   `json:"name" bson:"name"`
 	Email            string   `json:"email" bson:"email"`
 	RefreshTokens    []string `json:"refresh_tokens" bson:"refresh_tokens"`
+	Banned           bool     `json:"banned" bson:"banned"`
 }
 
 func NewUser(gid string, name string, email string) *User {
@@ -17,6 +18,7 @@ func NewUser(gid string, name string, email string) *User {
 		Name:          name,
 		Email:         email,
 		RefreshTokens: []string{},
+		Banned:        false,
 	}
 }
 
