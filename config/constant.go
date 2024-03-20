@@ -36,4 +36,5 @@ var LocationList = []string{
 	"운동장",
 	"체육관",
 	"실외 공간",
+	"기타 장소",
 }
