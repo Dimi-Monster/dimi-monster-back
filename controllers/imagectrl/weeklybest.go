@@ -16,6 +16,7 @@ import (
 )
 
 func GetWeeklyBestCtrl(c *fiber.Ctx) error {
+	needThumbnail := c.Query("thumbnail", "true") == "true"
 	userID := middleware.GetUserIDFromMiddleware(c)
 	type weeklyAggregate struct {
 		HexID       string    `bson:"_id"`
@@ -63,31 +64,51 @@ func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Internal Server Error")
 	}
 	var result []ImageResponse
-	for _, image := range images {
-		var base64String string
-		thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.HexID + ".jpg")
-		if err != nil {
-			log.Println(err)
-			base64String = ""
-		} else {
-			base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)
-		}
-		likedByMe := false
-		for _, user := range image.LikedBy {
-			if user == userID {
-				likedByMe = true
-				break
+	if needThumbnail {
+		for _, image := range images {
+			var base64String string
+			thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.HexID + ".jpg")
+			if err != nil {
+				log.Println(err)
+				base64String = ""
+			} else {
+				base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)
 			}
+			likedByMe := false
+			for _, user := range image.LikedBy {
+				if user == userID {
+					likedByMe = true
+					break
+				}
+			}
+			result = append(result, ImageResponse{
+				ID:          image.HexID,
+				CreatedAt:   image.CreatedAt.Format(time.RFC3339),
+				Description: image.Description,
+				Location:    image.Location,
+				Like:        image.Size,
+				LikedByMe:   likedByMe,
+				Thumbnail:   base64String,
+			})
 		}
-		result = append(result, ImageResponse{
-			ID:          image.HexID,
-			CreatedAt:   image.CreatedAt.Format(time.RFC3339),
-			Description: image.Description,
-			Location:    image.Location,
-			Like:        image.Size,
-			LikedByMe:   likedByMe,
-			Thumbnail:   base64String,
-		})
+	} else {
+		for _, image := range images {
+			likedByMe := false
+			for _, user := range image.LikedBy {
+				if user == userID {
+					likedByMe = true
+					break
+				}
+			}
+			result = append(result, ImageResponse{
+				ID:          image.HexID,
+				CreatedAt:   image.CreatedAt.Format(time.RFC3339),
+				Description: image.Description,
+				Location:    image.Location,
+				Like:        image.Size,
+				LikedByMe:   likedByMe,
+			})
+		}
 	}
 
 	return c.JSON(result)

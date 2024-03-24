@@ -27,6 +27,7 @@ type ImageResponse struct {
 
 func ListImageCtrl(c *fiber.Ctx) error {
 	pageStr := c.Query("page", "0")
+	needThumbnail := c.Query("thumbnail", "true") == "true"
 	page, err := strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
 		return c.Status(400).SendString("Bad Request")
@@ -48,31 +49,52 @@ func ListImageCtrl(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Internal Server Error")
 	}
 	result := make([]ImageResponse, len(images))
-	for i, image := range images {
-		var base64String string
-		thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.ID.Hex() + ".jpg")
-		if err != nil {
-			fmt.Println(err)
-			base64String = ""
-		} else {
-			base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)
-		}
-		likedByMe := false
-		for _, user := range image.LikedBy {
-			if user == userID {
-				likedByMe = true
-				break
+	if needThumbnail {
+		for i, image := range images {
+			var base64String string
+			thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.ID.Hex() + ".jpg")
+			if err != nil {
+				fmt.Println(err)
+				base64String = ""
+			} else {
+				base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)
+			}
+			likedByMe := false
+			for _, user := range image.LikedBy {
+				if user == userID {
+					likedByMe = true
+					break
+				}
+			}
+
+			result[i] = ImageResponse{
+				ID:          image.ID.Hex(),
+				CreatedAt:   image.CreatedAt.Format(time.RFC3339),
+				Description: image.Description,
+				Location:    image.Location,
+				Like:        len(image.LikedBy),
+				LikedByMe:   likedByMe,
+				Thumbnail:   base64String,
 			}
 		}
+	} else {
+		for i, image := range images {
+			likedByMe := false
+			for _, user := range image.LikedBy {
+				if user == userID {
+					likedByMe = true
+					break
+				}
+			}
 
-		result[i] = ImageResponse{
-			ID:          image.ID.Hex(),
-			CreatedAt:   image.CreatedAt.Format(time.RFC3339),
-			Description: image.Description,
-			Location:    image.Location,
-			Like:        len(image.LikedBy),
-			LikedByMe:   likedByMe,
-			Thumbnail:   base64String,
+			result[i] = ImageResponse{
+				ID:          image.ID.Hex(),
+				CreatedAt:   image.CreatedAt.Format(time.RFC3339),
+				Description: image.Description,
+				Location:    image.Location,
+				Like:        len(image.LikedBy),
+				LikedByMe:   likedByMe,
+			}
 		}
 	}
 	return c.JSON(result)
