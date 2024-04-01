@@ -8,6 +8,7 @@ import (
 	"pentag.kr/dimimonster/middleware"
 	"pentag.kr/dimimonster/models"
 	"pentag.kr/dimimonster/utils/crypt"
+	"pentag.kr/dimimonster/utils/discord"
 	"pentag.kr/dimimonster/utils/validator"
 )
 
@@ -62,6 +63,8 @@ func SendReportCtrl(c *fiber.Ctx) error {
 		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
+
+	go discord.SendReportWebhook(newReport)
 
 	return c.SendString("Send Report")
 }
