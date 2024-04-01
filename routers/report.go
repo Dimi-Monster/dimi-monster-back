@@ -10,7 +10,7 @@ func initReportRouter(router fiber.Router) {
 	reportRouter := router.Group("/report")
 	reportRouter.Use(middleware.AuthMiddleware)
 
-	reportRouter.Post("/send",
+	reportRouter.Post("/",
 		func(c *fiber.Ctx) error {
 			return reportctrl.SendReportCtrl(c)
 		},
