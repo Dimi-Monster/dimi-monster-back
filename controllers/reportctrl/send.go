@@ -1,8 +1,9 @@
 package reportctrl
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/kamva/mgm/v3"
 	"pentag.kr/dimimonster/middleware"
 	"pentag.kr/dimimonster/models"
@@ -37,13 +38,13 @@ func SendReportCtrl(c *fiber.Ctx) error {
 		body.Reason,
 	)
 	if err != nil {
-		log.Error(err)	
+		log.Println(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 
 	err = mgm.Coll(newReport).Create(newReport)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 
