@@ -3,11 +3,12 @@ package imagectrl
 import (
 	"image/jpeg"
 	"io"
-	"log"
+
 	"os"
 	"unicode/utf8"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/kamva/mgm/v3"
 	"github.com/nfnt/resize"
 	"pentag.kr/dimimonster/config"
@@ -87,7 +88,7 @@ func UploadImage(c *fiber.Ctx) error {
 	newImage := models.NewImage(userID, description, location)
 	err = mgm.Coll(newImage).Create(newImage)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
@@ -96,7 +97,7 @@ func UploadImage(c *fiber.Ctx) error {
 
 	thumbnailFile, err := os.Create("./data/thumbnail/" + fileID + ".jpg")
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
@@ -105,14 +106,14 @@ func UploadImage(c *fiber.Ctx) error {
 
 	err = jpeg.Encode(thumbnailFile, image, &jpeg.Options{Quality: 70})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
 	}
 	originalFile, err := os.Create("./data/original/" + fileID + ".jpg")
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
@@ -121,14 +122,14 @@ func UploadImage(c *fiber.Ctx) error {
 	file.Seek(0, 0)
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
 	}
 	_, err = originalFile.Write(fileBytes)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})

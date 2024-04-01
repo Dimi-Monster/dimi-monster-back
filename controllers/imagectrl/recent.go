@@ -1,9 +1,8 @@
 package imagectrl
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,7 +14,7 @@ func GetRecentImageCtrl(c *fiber.Ctx) error {
 	images := []models.Image{}
 	err := mgm.Coll(&models.Image{}).SimpleFind(&images, &bson.M{}, options.Find().SetSort(bson.M{"created_at": -1}).SetLimit(1))
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 

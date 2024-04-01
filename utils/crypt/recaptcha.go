@@ -1,9 +1,8 @@
 package crypt
 
 import (
-	"log"
-
 	"github.com/go-resty/resty/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"pentag.kr/dimimonster/config"
 )
 
@@ -40,7 +39,7 @@ func RecaptchaCheck(token string, action string) bool {
 		SetResult(&RecaptchaResBody{}).
 		Post("https://recaptchaenterprise.googleapis.com/v1/projects/dimi-monster/assessments?key=" + config.RecaptchaAPIKey)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return false
 	}
 	result := resp.Result().(*RecaptchaResBody)

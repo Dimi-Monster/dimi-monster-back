@@ -11,12 +11,12 @@ type Report struct {
 	TargetImageID    string `json:"target_image_id" bson:"target_image_id"`
 	TargetOwnerID    string `json:"target_owner_id" bson:"target_owner_id"`
 	ReporterID       string `json:"reporter_id" bson:"reporter_id"`
-	Category         int    `json:"category" bson:"category"`
 	Reason           string `json:"reason" bson:"reason"`
+	Status 		     string `json:"status" bson:"status"`
 	Secret           string `json:"secret" bson:"secret"`
 }
 
-func NewReport(targetImageID string, reporterID string, category int, reason string) (*Report, error) {
+func NewReport(targetImageID string, reporterID string, reason string) (*Report, error) {
 	foundImage := &Image{}
 	err := mgm.Coll(foundImage).FindByID(targetImageID, foundImage)
 	if err != nil {
@@ -26,8 +26,8 @@ func NewReport(targetImageID string, reporterID string, category int, reason str
 		TargetImageID: targetImageID,
 		TargetOwnerID: foundImage.OwnerID,
 		ReporterID:    reporterID,
-		Category:      category,
 		Reason:        reason,
+		Status:  	   "pending",
 		Secret:        random.RandString(32),
 	}, nil
 }

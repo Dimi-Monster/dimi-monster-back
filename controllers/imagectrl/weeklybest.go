@@ -3,11 +3,11 @@ package imagectrl
 import (
 	"context"
 	"encoding/base64"
-	"log"
 	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -54,13 +54,13 @@ func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 
 	cursor, err := mgm.Coll(&models.Image{}).Aggregate(context.Background(), pipeline)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 
 	var images []weeklyAggregate
 	if err = cursor.All(context.Background(), &images); err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 	var result []ImageResponse
@@ -69,7 +69,7 @@ func GetWeeklyBestCtrl(c *fiber.Ctx) error {
 			var base64String string
 			thumbnailfile, err := os.ReadFile("./data/thumbnail/" + image.HexID + ".jpg")
 			if err != nil {
-				log.Println(err)
+				log.Error(err)
 				base64String = ""
 			} else {
 				base64String = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(thumbnailfile)

@@ -1,10 +1,10 @@
 package authctrl
 
 import (
-	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,7 +22,7 @@ func LoginCtrl(c *fiber.Ctx) error {
 	}
 	profile, err := gauth.GetProfile(code)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	} else if !profile.EmailVerified || !strings.HasSuffix(profile.Email, "@dimigo.hs.kr") {
 		return c.Status(401).SendString("Invalid Email Address")
@@ -38,14 +38,14 @@ func LoginCtrl(c *fiber.Ctx) error {
 			)
 			err = mgm.Coll(newUser).Create(newUser)
 			if err != nil {
-				log.Println("Error while creating user")
-				log.Println(err)
+				log.Error("Error while creating user")
+				log.Error(err)
 				return c.Status(500).SendString("Internal Server Error")
 			}
 			foundUser = newUser
 		} else {
-			log.Println("Error while finding user")
-			log.Println(err)
+			log.Error("Error while finding user")
+			log.Error(err)
 			return c.Status(500).SendString("Internal Server Error")
 		}
 	}
@@ -58,14 +58,14 @@ func LoginCtrl(c *fiber.Ctx) error {
 	foundUser.RefreshTokens = append(foundUser.RefreshTokens, random.RandString(32))
 	err = mgm.Coll(foundUser).Update(foundUser)
 	if err != nil {
-		log.Println("Error while updating user")
-		log.Println(err)
+		log.Error("Error while updating user")
+		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 	accessToken, err := crypt.CreateJWT(crypt.JWTClaims{UserID: foundUser.ID.Hex(), Type: "auth"})
 	if err != nil {
-		log.Println("Error while creating JWT")
-		log.Println(err)
+		log.Error("Error while creating JWT")
+		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
 	}
 

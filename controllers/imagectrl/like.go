@@ -6,11 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"pentag.kr/dimimonster/middleware"
 	"pentag.kr/dimimonster/models"
+	"pentag.kr/dimimonster/utils/validator"
 )
 
 func GetLikeCountCtrl(c *fiber.Ctx) error {
 	imageID := c.Params("id")
-	if !isHex(imageID) {
+	if !validator.IsHex(imageID) {
 		return c.Status(400).SendString("Bad Request")
 	}
 	image := models.Image{}
@@ -28,7 +29,7 @@ func GetLikeCountCtrl(c *fiber.Ctx) error {
 
 func AddLikeCtrl(c *fiber.Ctx) error {
 	imageID := c.Params("id")
-	if !isHex(imageID) {
+	if !validator.IsHex(imageID) {
 		return c.Status(400).SendString("Bad Request")
 	}
 	userID := middleware.GetUserIDFromMiddleware(c)
@@ -54,7 +55,7 @@ func AddLikeCtrl(c *fiber.Ctx) error {
 
 func DeleteLikeCtrl(c *fiber.Ctx) error {
 	imageID := c.Params("id")
-	if !isHex(imageID) {
+	if !validator.IsHex(imageID) {
 		return c.Status(400).SendString("Bad Request")
 	}
 	userID := middleware.GetUserIDFromMiddleware(c)
