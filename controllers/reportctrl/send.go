@@ -16,7 +16,7 @@ type ReportRequest struct {
 }
 
 func SendReportCtrl(c *fiber.Ctx) error {
-	body := ReportRequest{}
+	body := new(ReportRequest)
 	if errArr := validator.ParseAndValidate(c, body); errArr != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": errArr,
