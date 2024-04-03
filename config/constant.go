@@ -5,7 +5,6 @@ const AccessTokenExpire = 15 * 60
 var LocationList = []string{
 	// 본관
 	"본관 교무실",
-	"본관 교무실",
 	"1-1 교실",
 	"1-2 교실",
 	"1-3 교실",
