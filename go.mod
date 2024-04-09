@@ -7,6 +7,7 @@ require (
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/gofiber/fiber/v2 v2.52.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/gtuk/discordwebhook v1.2.0
 	github.com/kamva/mgm/v3 v3.5.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	go.mongodb.org/mongo-driver v1.8.3
@@ -22,7 +23,6 @@ require (
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/gtuk/discordwebhook v1.2.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect

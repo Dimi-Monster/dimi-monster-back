@@ -13,6 +13,7 @@ type Report struct {
 	ReporterID       string `json:"reporter_id" bson:"reporter_id"`
 	Category 	     string `json:"category" bson:"category"`
 	Reason           string `json:"reason" bson:"reason"`
+	ProcessReason    string `json:"process_reason" bson:"process_reason"`
 	Status 		     string `json:"status" bson:"status"`
 	Secret           string `json:"secret" bson:"secret"`
 }
