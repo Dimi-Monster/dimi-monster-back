@@ -15,4 +15,9 @@ func initReportRouter(router fiber.Router) {
 			return reportctrl.SendReportCtrl(c)
 		},
 	)
+	reportRouter.Post("/process",
+		func(c *fiber.Ctx) error {
+			return reportctrl.ProcessReportCtrl(c)
+		},
+	)
 }
