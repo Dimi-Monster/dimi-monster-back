@@ -24,8 +24,20 @@ func LoginCtrl(c *fiber.Ctx) error {
 	if err != nil {
 		log.Error(err)
 		return c.Status(500).SendString("Internal Server Error")
-	} else if !profile.EmailVerified || !strings.HasSuffix(profile.Email, "@dimigo.hs.kr") {
+	} else if !profile.EmailVerified {
 		return c.Status(401).SendString("Invalid Email Address")
+	} else if !strings.HasSuffix(profile.Email, "@dimigo.hs.kr") {
+		foundEmailWhite := &models.EmailWhitelist{}
+		err = mgm.Coll(foundEmailWhite).First(bson.M{"email": profile.Email}, foundEmailWhite)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				return c.Status(401).SendString("Invalid Email Address")
+			} else {
+				log.Error("Error while finding email whitelist")
+				log.Error(err)
+				return c.Status(500).SendString("Internal Server Error")
+			}
+		}
 	}
 	foundUser := &models.User{}
 	err = mgm.Coll(foundUser).First(bson.M{"gid": profile.SUB}, foundUser)
